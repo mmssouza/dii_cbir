@@ -21,7 +21,7 @@ class sim_ann:
 
  def __init__(self,f,T0,alpha,P,L):
   seed()
-  self.arg_lim = (Dim-1)*[(0.05, 3.5)]+[(0.005,2.5)]
+  self.arg_lim = (Dim-1)*[(0.1, 4.0)]+[(0.05,3.0)]
   self.s = self.__gera_s0()
   self.T = T0
   self.P = P
@@ -34,14 +34,16 @@ class sim_ann:
    self.hall_of_fame.insert(0,scipy.hstack((self.fit,self.s)))
   
  def Perturba(self,x):
-  for i in range(x.shape[0]):
-   if scipy.rand() < 0.6:
+  for i in range(len(x)):
+   if scipy.rand() < 0.7:
     aux = x[i]
-    x[i] = x[i] + 0.6*x[i]*scipy.randn()
-    if not (self.arg_lim[i][0] <= x[i] <= self.arg_lim[i][1]):
-	 x[i] = aux
+    x[i] = aux + 400e-3*scipy.randn() 
+    if x[i] >= self.arg_lim[i][1]:
+     x[i] = self.arg_lim[i][1]
+    elif x[i] <= self.arg_lim[i][0]:
+     x[i] = self.arg_lim[i][0]   
   return x
-  
+ 
  def run(self):
   i = 1
   self.nS = 0

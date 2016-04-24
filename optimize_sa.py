@@ -20,10 +20,10 @@ if __name__ == '__main__':
   
  mt = cpu_count()
  # Pontos do contorno
- nc = 32
+ nc = 200
  # Parâmetros da distância
- beta = 0.001
- radius = 35
+ beta = 1.214
+ radius = 5
  set_param(beta,radius)
  dataset = ""
  fout = ""
@@ -49,7 +49,7 @@ if __name__ == '__main__':
   elif opt == "--dim":
    dim = int(arg)
    optimize.set_dim(dim)
-   print optimize.Dim
+   #print optimize.Dim
   
   
  conf = [float(i) for i in args]
@@ -72,6 +72,7 @@ if __name__ == '__main__':
   
  def cost_func(args):  
   tt = time() 
+  print args
   sigma = args[-1]
   raios = args[0:-1]
   N = len(names)
@@ -87,7 +88,6 @@ if __name__ == '__main__':
 #  res = p.map(ff,l)
 #  p.close()
   Fl = [np.array([smooth(desc.dii(dataset+"/"+k,raio = r,nc = Nc,method = "octave"),sigma) for r in raios]) for k in names]
-  
   #print "Calculando Silhouette"
   #cost = float(np.median(1. - silhouette(Fl,np.array(Y)-1,Nthreads = Ncpu)))
   md = pdist_mt(Fl,Ncpu) 
@@ -107,9 +107,8 @@ if __name__ == '__main__':
    for i in n[0]:
     l[classe_padrao-1,i] = l[classe_padrao-1,i] + 1 
 
-  v = np.array([l[:,i].sum() for i in np.arange(Nretr)])
-  cost = ((v - 99.)**2).sum()/v.shape[0]
-  print args
+  v = np.array([l[:,i].sum() for i in np.arange(1,Nretr)])
+  cost = np.abs(v - 99.).sum()/v.shape[0]
   print "tempo total: {0} seconds".format(time() - tt)
   print "cost = {0}".format(cost)
   return cost

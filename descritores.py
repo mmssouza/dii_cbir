@@ -10,7 +10,7 @@ from oct2py import Oct2Py
 import atexit
 
 oc = Oct2Py()
-#atexit.register(oc.exit)
+atexit.register(oc.exit)
 
 class contour_base:
  '''Represents an binary image contour as a complex discrete signal. 
@@ -217,6 +217,8 @@ def dii(fn,raio,nc = 256,method = 'cv'):
   #r = raio*c.perimeter()/(2*np.pi)
   r = raio*np.abs(c.c - c.c.mean()).mean()
   res = np.array([x[np.nonzero(x <= r)].sum() for x in d])
+  #print np.abs(res),np.abs(res).max()
+  res = res/np.abs(res).max()
   return res - res.mean()
   
 # Centroid distance signature

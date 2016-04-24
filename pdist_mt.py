@@ -13,9 +13,9 @@ def set_param(b,r):
  setattr(sys.modules[__name__],"radius",r)
  
 def dist(X,Y):
- CX = np.std(X,axis = 0).mean()
- CY = np.std(Y,axis = 0).mean()
- return fastdtw(X.T,Y.T,radius = radius,dist = cosine)[0]/(CX + CY + beta)
+ CX = np.std(X,axis = 1).mean()
+ CY = np.std(Y,axis = 1).mean()
+ return fastdtw(X,Y,radius = radius,dist = cosine)[0]/(CX + CY + beta)
 
 def pdist(X,idx,q):
  N = len(X)
