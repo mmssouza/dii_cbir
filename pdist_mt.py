@@ -3,7 +3,7 @@ import scipy
 import numpy as np
 from multiprocessing import Queue,Process
 from fastdtw import fastdtw
-from scipy.spatial.distance import cityblock,cosine
+from scipy.spatial.distance import cityblock,cosine,correlation
 
 beta = 0.001
 radius = 1
@@ -13,9 +13,10 @@ def set_param(b,r):
  setattr(sys.modules[__name__],"radius",r)
  
 def dist(X,Y):
- CX = np.std(X,axis = 1).mean()
- CY = np.std(Y,axis = 1).mean()
+ CX = np.std(X)
+ CY = np.std(Y)
  return fastdtw(X,Y,radius = radius,dist = cosine)[0]/(CX + CY + beta)
+ #return fastdtw(X,Y,radius = radius,dist = cosine)[0]
 
 def pdist(X,idx,q):
  N = len(X)

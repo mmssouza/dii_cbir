@@ -10,13 +10,13 @@ import descritores as desc
 from pdist_mt import pdist_mt,set_param
 
 if __name__ == '__main__':
- 
  nc = 32
  raio = np.array([0.05,0.15,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2.5,2.75,3.0,3.5])
  # Parâmetros da distância
- beta = 0.001
- radius = 35
- sigma = .15
+ kk = 16
+ beta = 1.13
+ radius = 5
+ #sigma = 1.2
 
  def smooth(x,s):
   N = len(x)
@@ -50,11 +50,29 @@ if __name__ == '__main__':
  # Número de recuperações para base balanceada
  Nretr = N/Nclasses
  print "Calculando descritores"
- 
  tt = time()
- Fl = [np.array([smooth(desc.dii(sys.argv[1] + k,raio = r,nc = nc,method = "octave"),sigma) for r in raio]) for k in names]
+ Fl = [np.array([desc.dii(sys.argv[1] + k,raio = r,nc = nc,method = "octave") for r in raio]) for k in names]
  print time() - tt
-
+ Fl_m = [k.mean(axis = 0) for k in Fl]
+ #rem = nc%kk
+ #limits_lo = np.arange(0,nc,kk)
+ #limits_hi= np.arange(kk,nc,kk)
+ #idx =[range(lo,hi) for lo,hi in zip(limits_lo[0:len(limits_lo)-1],limits_hi)]
+ #if rem:
+ # idx = idx + [range(nc-rem,nc)+range(0,kk-rem)]
+ #print limits_lo,limits_hi,idx
+ Fl_sliced = []
+ for vt in Fl_m:
+  start = np.abs(vt).argmax()
+  rem = nc%kk
+  vaux = np.hstack((vt,vt,vt[0:kk+rem]))
+  limits_lo = np.arange(start,nc+start,kk)
+  limits_hi= np.arange(kk+start,kk+nc+start+rem,kk)
+  idx =[range(lo,hi) for lo,hi in zip(limits_lo,limits_hi)]
+  Fl_sliced.append(np.array([vaux[i] for i in idx]))
+ #F = F/np.tile(np.abs(F).max(axis = 0),(Nc,1))
+ #C1.append(F.std(axis = 0).mean())
+ #Fl1.append(F.T)
  print "Calculando matriz de distancias"
 
  #tt = time()
@@ -63,7 +81,7 @@ if __name__ == '__main__':
 
  set_param(b = beta, r = radius)
  tt = time()
- md = pdist_mt(Fl,2)
+ md = pdist_mt(Fl_sliced,2)
  print time() - tt
  
  l = np.zeros((Nclasses,Nretr),dtype = int)
@@ -86,5 +104,5 @@ if __name__ == '__main__':
 
  print l
  print v
- print ((v - 99.)**2).sum()/v.shape[0]
+ print (np.abs(v - 99.)).sum()/v.shape[0]
 

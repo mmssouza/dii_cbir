@@ -3,6 +3,7 @@
 
 import numpy as np
 import cv,cv2
+from pylab import imread
 from scipy.interpolate import interp1d 
 from scipy.spatial.distance import pdist,squareform
 from math import sqrt,acos
@@ -213,14 +214,18 @@ def aii(name,r,white_bg = False):
 def dii(fn,raio,nc = 256,method = 'cv'):
   c = contour_base(fn,nc = nc,method = method)
   aux = np.vstack([c.c.real,c.c.imag]).T
+  #im = imread(fn)
   d = squareform(pdist(aux))
-  #r = raio*c.perimeter()/(2*np.pi)
-  r = raio*np.abs(c.c - c.c.mean()).mean()
+  #v, = np.where(im.flatten() == 0.0)
+  #area = len(v)
+  #r = round(raio*np.sqrt(area/np.pi))
+  #r = raio*np.abs(c.c - c.c.mean()).mean()
+  r = raio*c.perimeter()/(2*np.pi)
   res = np.array([x[np.nonzero(x <= r)].sum() for x in d])
-  #print np.abs(res),np.abs(res).max()
-  res = res/np.abs(res).max()
-  return res - res.mean()
-  
+  #res = res/np.abs(res).max()
+  #res = res/res.mean()
+  #return res - res.mean()
+  return res
 # Centroid distance signature
 def cd(fn,nc = 256,method = 'cv'):
   img_c = contour_base(fn,nc = nc,method = method)
